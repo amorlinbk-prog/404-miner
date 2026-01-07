@@ -1,0 +1,17 @@
+name: 404-base-miner
+channels: 
+  - defaults 
+  - conda-forge 
+  - nvidia
+
+dependencies: 
+  - python=3.11
+  - pip 
+  - cmake=4.0.3
+  - gcc=14.2.0
+  - gxx=14.2.0
+  - gcc_linux-64=14.2.0
+  - cuda-nvcc=12.8
+  - ninja=1.13.0
+  - libcurand=10.3.9.55-0
+

@@ -1,0 +1,48 @@
+instruction_img_selection: "Background removal evaluation task:
+
+                            Given:
+                            - LEFT: Background removed, image candidate A
+                            - RIGHT: Background removed, image candidate B  
+                            - MIDDLE: Reference image with an original background
+                            
+                            Evaluation metrics:
+                            1. Object fidelity: Preservation of all structural elements from reference
+                            2. Segmentation accuracy: Clean object boundaries without artifacts
+                            3. Background elimination: Complete removal without residual pixels
+                            4. Alpha matte quality: Proper transparency without semi-transparent errors, floating foggy peaces and non-consistency in colouring
+                            5. Noise absence: No floating debris, disconnected fragments, or visual noise
+                            
+                            Select the candidate (LEFT or RIGHT) with optimally removed background (clean image, without floating debris of any form or foggy artifacts) 
+                            based on the reference image. Select the best quality image out of two.
+                            Output only: 'left' or 'right'"
+
+vlm_model:
+  model_id: "OpenGVLab/InternVL3_5-2B"
+  max_tokens: 20
+  max_model_len: 3500
+  temperature: 0.3
+  top_p: 0.95
+  seed: 56
+  tensor_parallel_size: 1
+  disable_sliding_window: false
+  enable_chunked_prefill: true
+  disable_mm_preprocessor_cache: false
+  max_num_batched_tokens: 3500
+  model_precision: "bfloat16"
+  cpu_offload_gb: 0
+
+# These parameters are usually found in config.json for the chosen model;
+# They will be used for estimating the coefficient for the optimum GPU memory consumption by the VLM.
+vlm_model_params:
+  model_billions: 2
+  hidden_size_llm: 2048
+  hidden_size_vision: 1024
+  num_hidden_layers_llm: 28
+  num_hidden_layers_vision: 24
+  num_attention_heads_llm: 16
+  num_attention_heads_vision: 16
+  num_key_value_heads: 8
+  intermediate_size_llm: 6144
+  intermediate_size_vision: 4096
+  image_size: 448
+  patch_size: 14
