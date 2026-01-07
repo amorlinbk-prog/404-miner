@@ -47,10 +47,24 @@ class GaussianProcessor:
         # Load Qwen image edit pipeline for multi-view generation
         logger.info("Loading Qwen/Qwen-Image-Edit-2511 for view generation...")
         qwen_dtype = torch.bfloat16 if self._device.type == "cuda" else torch.float32
-        self._qwen_pipe = QwenImageEditPlusPipeline.from_pretrained(
-            "Qwen/Qwen-Image-2512",
-            torch_dtype=qwen_dtype,
-        ).to(self._device)
+        # If there are multiple GPUs, let diffusers/accelerate shard the model across them
+        if torch.cuda.is_available() and torch.cuda.device_count() > 1:
+            logger.info(
+                f"Detected {torch.cuda.device_count()} CUDA devices; "
+                "loading Qwen with device_map='auto' to spread it across GPUs."
+            )
+            self._qwen_pipe = QwenImageEditPlusPipeline.from_pretrained(
+                "Qwen/Qwen-Image-Edit-2511",
+                torch_dtype=qwen_dtype,
+                device_map="balanced",
+            )
+        else:
+            # Single-GPU or CPU: keep the whole pipeline on self._device
+            self._qwen_pipe = QwenImageEditPlusPipeline.from_pretrained(
+                "Qwen/Qwen-Image-Edit-2511",
+                torch_dtype=qwen_dtype,
+                device_map="cuda",
+            ).to(self._device)
         logger.info("Qwen image edit pipeline loaded.")
 
         torch.cuda.empty_cache()
